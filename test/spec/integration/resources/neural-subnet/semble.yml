@@ -1,0 +1,16 @@
+schema:
+  _default:
+    0.9:
+    1.1:
+  debian:
+    0.9:
+    1.1:
+    2.3:
+  alpine:
+    1.1:
+    1.9:
+structure:
+  sources: src
+  output: build
+short_version_strategy: latest
+default_platform: debian

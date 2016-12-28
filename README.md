@@ -39,6 +39,9 @@ project structure:
   # each directory on this level represents platform
   /_default # default directories serve as base to build on
     /0
+      # .semble is a special ignored directory. Here you can set custom 
+      # context for specific version via `context.yml` file
+      /.semble/context.yml
       /etc/neural-subnet/motd.d/header
       /etc/neural-subnet/neural-subnet.ini
     /1
@@ -50,7 +53,7 @@ project structure:
     /1.4
       /etc/neural-subnet/.wh.mask.yml.liquid
     /2
-      /etc/enural-subnet/extensions.yml
+      /etc/neural-subnet/extensions.yml
   /debian
     /0
       /Dockerfile 
@@ -88,7 +91,7 @@ semble debian:1.4.17
 + /etc/neural-subnet/mask.yml.liquid
 o /etc/neural-subnet/neural-subnet.yml
 
-# platform: -, version: 1.4.0.0, source: src/_default/2
+# platform: -, version: 1.4.0.0, source: src/_default/1.4
 - /etc/neural-subnet/mask.yml.liquid
 
 # Not analyzing -:2.0.0.0 - version is higher than specified
@@ -123,53 +126,41 @@ structure:
 
 ```yml
 # used to render versions when `semble` is called without arguments
-schema:
-  # platform: { _context: {}, version: definition, version: definition }
+targets:
+  # platform: { version: definition, version: definition }
   _default:
-    context:
-      timeouts:
-        connect: 5000
-        read: 5000
-    versions:
-      1.4.17: # will result in /build/1.4.17
-      1.4.18:
-        context:
-          enable_debug: true
-      1.4.19:
+    1.4.17: # will result in /build/1.4.17
+    1.4.18:
+      context:
+        enable_debug: true
+    1.4.19:
   alpine:
-    versions:
-      1.4.17: # will result in /build/alpine-1.4.17
-      1.4.18:
+    1.4.17: # will result in /build/alpine-1.4.17
+    1.4.18:
   debian:
-    versions:
-      1.4.19: # will result in /build/debian-1.4.19
-      1.5:
-semble:
-  structure:
-    sources: /src
-    output: /build
-  # can be either 'latest' (default) or 'none'
-  # if set to 'latest', semble will generate parent version from it's 
-  # latest child (if parent version doesn't exist), so /build/1.4 will 
-  # be a complete copy of /build/1.4.19, and /build/1 would be a copy 
-  # of build/1.4, similar actions would be taken against 'alpine' and 
-  # 'debian' platform
-  # if 'none' set, nothing will happen
-  short_version_strategy: latest
-  # if this is set, target platorm versions that do not exist in 
-  # default platform will be copied from target platform, so, in
-  # this example, /build/1.5.0 will be a copy from /build/debian-1.5.0
-  default_platform: debian
-context:
-  enable_debug: false
-  show_motd: true
+    1.4.19: # will result in /build/debian-1.4.19
+    1.5:
+structure:
+  # be careful not to set absolute paths if you don't want to
+  sources: src
+  output: build
+# can be either 'latest' (default) or 'none'
+# if set to 'latest', semble will generate parent version from it's 
+# latest child (if parent version doesn't exist), so /build/1.4 will 
+# be a complete copy of /build/1.4.19, and /build/1 would be a copy 
+# of build/1.4, similar actions would be taken against 'alpine' and 
+# 'debian' platform
+# if 'none' set, nothing will happen
+short_version_strategy: latest
+# if this is set, target platorm versions that do not exist in 
+# default platform will be copied from target platform, so, in
+# this example, /build/1.5.0 will be a copy from /build/debian-1.5.0
+default_platform: debian
 ```
 
 The context for rendering templates is built in following way:
-- get root context value
-- override with platform-specific context (that means overlapping keys 
-would be completely overwritten)
-- override with version-specific context
+- get first (lowest) version context
+- override it with later version and iterate until versions end
 - add `platform` and `version` entries, where `platform` is simple 
 string, and `version` is a hash with keys `full`, `major`, `minor`, `patch`, 
 `build` and `classifier`

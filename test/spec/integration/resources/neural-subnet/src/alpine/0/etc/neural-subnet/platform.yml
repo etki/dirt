@@ -1,0 +1,4 @@
+os: alpine
+isolation:
+  type: container
+  driver: docker

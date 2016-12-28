@@ -1,0 +1,7 @@
+FROM alpine
+
+RUN wget -q -O /usr/local/neural-subnet https://example.com/apk/neural-subnet-{{ version }}-web-scale-edition.tar.gz
+
+ADD etc/neural-subnet /etc/neural-subnet
+
+CMD ["/usr/local/neural-subnet"]

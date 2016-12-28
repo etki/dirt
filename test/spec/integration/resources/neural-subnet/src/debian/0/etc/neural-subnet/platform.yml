@@ -1,0 +1,4 @@
+os: debian
+isolation:
+  type: container
+  driver: docker

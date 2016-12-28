@@ -1,6 +1,8 @@
 module Semble
   module Model
     class VersionSpecification
+      include Comparable
+
       # @type [String]
       attr_accessor :platform
       # @type [Semble::Model::Version]
@@ -13,6 +15,18 @@ module Semble
         @sources = {}
         @context = {}
         block.call(self) if block
+      end
+
+      def merge(other)
+        result = clone
+        result.platform = other.platform
+        result.version = other.version
+        result.sources = Semble::Utility::Hash.deep_merge(result.sources, other.sources)
+        result.context = Semble::Utility::Hash.deep_merge(result.context, other.context)
+      end
+
+      def <=>(other)
+        version <=> other.version
       end
     end
   end

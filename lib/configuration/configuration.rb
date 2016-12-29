@@ -1,40 +1,41 @@
 module Semble
   module Configuration
-    class Configuration
-      attr_accessor :semble
-      attr_accessor :context
-      attr_accessor :schema
-    end
 
-    class SembleConfiguration
+    DEFAULT_SOURCES_PATH = 'src'
+    DEFAULT_OUTPUT_PATH = 'build'
+    SHORT_VERSION_STRATEGY_NONE = :none
+    SHORT_VERSION_STRATEGY_LATEST = :latest
+
+    class Configuration
+      attr_accessor :structure
+      attr_accessor :schema
       attr_accessor :short_version_strategy
       attr_accessor :default_platform
+
+      def initialize(&block)
+        block.call(self) if block
+      end
     end
 
     class StructureConfiguration
       attr_accessor :sources
       attr_accessor :output
+
+      def initialize(sources = nil, output = nil, &block)
+        @sources = sources
+        @output = output
+        block.call(self) if block
+      end
     end
 
     class VersionConfiguration
       attr_accessor :version
       attr_accessor :context
 
-      def initialize(version = nil, context = {})
+      def initialize(version = nil, context = {}, &block)
         @version = version
         @context = context
-      end
-    end
-
-    class PlatformConfiguration
-      attr_accessor :platform
-      attr_accessor :versions
-      attr_accessor :context
-
-      def initialize(platform = nil, versions = {}, context = {})
-        @platform = platform
-        @versions = versions
-        @context = context
+        block.call(self) if block
       end
     end
   end

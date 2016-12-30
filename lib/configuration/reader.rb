@@ -1,3 +1,5 @@
+require 'configuration/parser'
+
 module Semble
   module Configuration
     class Reader
@@ -8,7 +10,9 @@ module Semble
           raw = location.read
           Semble::Configuration::Parser.new.parse(raw, base_path)
         rescue Exception => e
-          raise ArgumentError, "Could not read Semble config at `#{location}`, original exception: #{e}"
+          printed_exception = "#{e}\n#{e.backtrace.join("\n")}"
+          message = "Could not read Semble config at `#{location}`, original exception: \n#{printed_exception}"
+          raise ArgumentError, message
         end
       end
     end

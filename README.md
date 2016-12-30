@@ -128,12 +128,6 @@ structure:
 # used to render versions when `semble` is called without arguments
 targets:
   # platform: { version: definition, version: definition }
-  _default:
-    1.4.17: # will result in /build/1.4.17
-    1.4.18:
-      context:
-        enable_debug: true
-    1.4.19:
   alpine:
     1.4.17: # will result in /build/alpine-1.4.17
     1.4.18:
@@ -152,10 +146,6 @@ structure:
 # 'debian' platform
 # if 'none' set, nothing will happen
 short_version_strategy: latest
-# if this is set, target platorm versions that do not exist in 
-# default platform will be copied from target platform, so, in
-# this example, /build/1.5.0 will be a copy from /build/debian-1.5.0
-default_platform: debian
 ```
 
 The context for rendering templates is built in following way:

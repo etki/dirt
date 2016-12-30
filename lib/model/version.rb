@@ -21,13 +21,39 @@ module Semble
         @classifier = match[5]
       end
 
-      def normalize
-        other = clone
+      def normalize!
         PART_NAMES.each do |name|
           variable = ('@' + name.to_s).to_sym
-          other.instance_variable_set(variable, (instance_variable_get(variable) or 0))
+          instance_variable_set(variable, (instance_variable_get(variable) or 0))
         end
-        other
+        self
+      end
+
+      def normalize
+        clone.normalize!
+      end
+
+      # Removes last version part (classifier, then build, then patch, etc.) and returns it. in case all parts are set
+      # to nil, returns nil
+      def shorten!
+        if @classifier
+          @classifier = nil
+          return self
+        end
+        i = 3
+        while i >= 0
+          part = PART_NAMES[i]
+          variable = ('@' + part.to_s).to_sym
+          i -= 1
+          next if instance_variable_get(variable).nil?
+          instance_variable_set(variable, nil)
+          return self
+        end
+        nil
+      end
+
+      def shorten
+        clone.shorten!
       end
 
       def to_s
@@ -39,7 +65,7 @@ module Semble
             if accumulator
               accumulator += '.' + chunk.to_s
             else
-              accumulator = chunk
+              accumulator = chunk.to_s
             end
           end
         end

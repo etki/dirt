@@ -16,7 +16,7 @@ module Semble
       end
 
       def self.get
-        logger = Logger.new(sink)
+        logger = Logger.new(@@sink)
         logger.level = @@level
         logger
       end

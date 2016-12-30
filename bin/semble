@@ -1,2 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'cli/entry_point'
+
+semble = Semble::CLI::EntryPoint.new(Dir.pwd)
+semble.run(ARGV)

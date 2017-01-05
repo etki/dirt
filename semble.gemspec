@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/etki/semble'
   s.license  = 'MIT'
   # this will stay here for a while until i'm sure lower versions work fine too
-  s.required_ruby_version = '>= 2.3'
+  s.required_ruby_version = '>= 2.1'
   s.add_runtime_dependency 'liquid', '~> 4.0'
   s.add_runtime_dependency 'gli', '~> 2.0'
   s.add_runtime_dependency 'semantic', '~> 1.5'

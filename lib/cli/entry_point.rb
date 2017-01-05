@@ -2,7 +2,7 @@ require 'pathname'
 require 'gli'
 require 'configuration/reader'
 require 'configuration/validator'
-require 'engine/api'
+require 'api/entry_point'
 
 module Semble
   module CLI
@@ -56,6 +56,10 @@ module Semble
         end
 
         default_command :build
+      end
+
+      def build(**args)
+        puts 'not implemented'
       end
     end
   end

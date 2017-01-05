@@ -1,0 +1,14 @@
+language: ruby
+cache: bundler
+rvm:
+- 1.9
+- 2.0
+- 2.1
+- 2.2
+- 2.3
+- 2.4
+- jruby
+script: bundle exec rake test
+env:
+  global:
+    secure: jiJVff3UomynfG0HtFXssrZaqkiKusBFmG/kpuvZrjXqazmY/xdiFYzioZPZ8r6alcCr+7ktg0Zo6Mo4e66/R6PBa0JeeqrfOgAw5gzD98SnROzRCSFSKAJNDFGOEGlvnBhzTQIZXJfZzYma3vyGGViJ3OfYzzWuhj2/KZ/1IfEhoZubqaCw5CD258sMVjHtLyiCVKpAzbTH4dYTFbIXXhI9/UNHisEq6QME3ODi+sHYZ7Ufj6ryq847Yn5r+zoFGYto8M1DTmeRXKr3NEglsNrjuLADeTl3htpDWyVKMGGUVHVHxGUy6dTQu945ypCegCa/khobBflTo0LPZgpFE6PI1I9X8f5/ktgIuWY6E/in0ynyrCyP/U5F40JieI9GJ6oiaOrhPkojwxnJaCHSTla4LHldMQExrxaGPRJUjgWzh4MpU1kQum2eFOMsehJHQghHHhVl3mwMfkrx5f9TIdVToFpHn6OZ8AO+3DHoZonEwf+/9ld6cImX9bUKphs6ypLL/qe2kiip9OxNLeYHaK2+mIijm4oHdGtEJ0zOP1ag0pJisWfrZ1kEb05oll8BqoO00UVMzNa9DY1VigzMpchm6KsTSBvUyJNegk/3zBjEBC/mlxGNA/oe82CyUQwrAbgiKeu5WTdbfSP33/NcRFH+D2LSxRgCx+9f+w95+Xg=

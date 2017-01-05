@@ -1,3 +1,5 @@
+require 'configuration/constants'
+
 module Semble
   module Configuration
     class Configuration

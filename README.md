@@ -7,6 +7,8 @@ This is a work-in-process project that may never hit a release.
 This is a simple project to speed up multi-version Docker image 
 building.
 
+## Motivation
+
 Imagine you have to maintain an image for a service that has 
 several versions and several platforms (e.g. debian for backward 
 compatibility and alpine), and your dockerfile looks just like that:
@@ -21,11 +23,11 @@ While they differ only a little, you need some sophisticated management
 to update all maintained versions at once. If you store each version in
 a separated branch and need to add new `RUN` instruction, say, to fix a
 security hole - you'll have a lot of manual work. Semble aims to solve 
-that problem and maintain docker image sources as an easily rebuilt
-entity. semble allows you to have a set of source files that are filtered
-and optionally rendered for particular versions you may specify, and by
-that you may rebuild several version sources from a single source set
-using single command.
+that problem and maintain Docker image sources as an easily rebuilt
+entity. Semble allows you to have a set of source files that are 
+filtered and optionally rendered for particular versions you may 
+specify, and by that you may rebuild several version sources from a 
+single source set using single command.
 
 ## Example
 

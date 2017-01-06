@@ -1,4 +1,4 @@
-schema:
+targets:
   _default:
     0.9:
     1.1:
@@ -9,6 +9,8 @@ schema:
   alpine:
     1.1:
     1.9:
+      context:
+        mask: /34
 structure:
   sources: src
   output: build

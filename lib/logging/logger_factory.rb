@@ -4,21 +4,32 @@ module Semble
   module Logging
     class LoggerFactory
 
-      @@sink = STDOUT
-      @@level = Logger::INFO
+      attr_accessor :target
+      attr_accessor :threshold
 
-      def self.set_level(level)
-        @@level = level
+      def initialize(target = STDOUT, threshold = Logger::INFO)
+        self.target = target
+        self.threshold = threshold
       end
 
-      def self.set_sink(sink)
-        @@sink = sink
-      end
-
-      def self.get
-        logger = Logger.new(@@sink)
-        logger.level = @@level
+      def get(name = nil, threshold = nil, target = nil)
+        logger = Logger.new((target or self.target))
+        logger.level = (threshold or self.threshold)
         logger
+      end
+
+      @@singleton = self.new
+
+      def self.threshold=(threshold)
+        @@singleton.threshold = threshold
+      end
+
+      def self.target=(target)
+        @@singleton.target = target
+      end
+
+      def self.get(name = nil, threshold = nil, target = nil)
+        @@singleton.get(name, threshold, target)
       end
     end
   end

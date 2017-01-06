@@ -1,6 +1,14 @@
+# -*- encoding: utf-8 -*-
+# http://yehudakatz.com/2010/04/02/using-gemspecs-as-intended/
+# Yeap, i'm blindly following Yehuda
+library_root = File.expand_path('../lib/', __FILE__)
+$:.unshift(library_root) unless $:.include?(library_root)
+
+require 'semble'
+
 Gem::Specification.new do |s|
   s.name = 'semble'
-  s.version  = '0.1.0'
+  s.version  = Semble::VERSION
   s.platform = Gem::Platform::RUBY
   s.summary  = 'Basic tool to maintain multi-version Docker projects'
   s.authors  = ['Etki']

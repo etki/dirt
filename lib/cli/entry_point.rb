@@ -1,65 +1,91 @@
 require 'pathname'
+require 'logger'
 require 'gli'
-require 'configuration/reader'
-require 'configuration/validator'
-require 'api/entry_point'
+require 'semble'
+require 'logging/logger_factory'
+require 'model/configuration/bootstrap'
+require 'bootstrap/container_builder'
 
 module Semble
   module CLI
     class EntryPoint
       include GLI::App
 
-      attr_reader :working_directory
+      def initialize
+        @logger = Semble::Logging::LoggerFactory.get(self.class)
+      end
 
       gli_run = instance_method(:run)
 
-      def initialize(working_directory)
-        @working_directory = working_directory
-      end
-
       define_method :run do |args|
-        load_definitions(self.working_directory)
+        register
         gli_run.bind(self).(args)
       end
 
-      def read_configuration(path, working_directory)
-        path = Pathname.new(path)
-        if path.exist?
-          configuration = Semble::Configuration::Reader.new.read(path)
-        else
-          configuration = Semble::Configuration::Configuration.default(working_directory)
-        end
-        validation_result = Semble::Configuration::Validator.new.validate(configuration)
-        unless validation_result[:valid]
-          chunks = ['Configuration at is invalid:']
-          validation_result[:violations].each do |property, violations|
-            violations.each do |violation|
-              chunks.push("#{property}: #{violation}")
-            end
-          end
-          message = chunks.join("\n -")
-          raise ArgumentError, message
-        end
-        configuration
-      end
-
-      def load_definitions(working_directory)
+      def register
         program_desc 'Tool for assembling versioned filesets, e.g. Docker image contexts for different product versions'
-        spec = Gem::Specification.load(File.expand_path('../../semble.gemspec', __dir__))
-        version spec.version
-        flag [:c, :config, :configuration], :default_value => File.join(working_directory, 'semble.yml')
+        version Semble::VERSION
+        flag [:c, :config, :configuration], :default_value => 'semble.yml'
+        flag [:w, :'working-directory'], :default_value => nil
+        # Currently there's no time to play with files. Next release, maybe.
+        # flag [:'log-target'], :default_value => nil
+        flag [:'log-threshold'], :default_value => 'info'
 
         command :build do |c|
           c.action do |globals, options, args|
-            build(globals[:c], *args)
+            wrap do
+              initialize_container(globals)
+              if args.empty?
+                report = @container.api.build_all
+              else
+                report = @container.api.build(args.map {|arg| Semble::Model::API::BuildRequest.from_string(arg) })
+              end
+              process_result(report.exceptions)
+            end
           end
         end
 
         default_command :build
       end
 
-      def build(**args)
-        puts 'not implemented'
+      def wrap
+        begin
+          yield
+        rescue Exception => e
+          process_result([e])
+        end
+      end
+
+      private
+      def initialize_container(flags)
+        config = Semble::Model::Configuration::Bootstrap.new
+        config.log_threshold = flags['log-threshold']
+        config.log_target = STDOUT
+        working_directory = Pathname.new(Dir.pwd)
+        working_directory = working_directory.join(flags[:w]) if flags[:w]
+        config.working_directory = working_directory
+        config.configuration_file = working_directory.join(flags[:c])
+        @container = Semble::Bootstrap::ContainerBuilder.new.bootstrap(config, nil)
+      end
+
+      # @param [Array<Exception>] exceptions
+      # @param [Integer] exit_code
+      def process_result(exceptions = [], exit_code = nil)
+        if exceptions.empty?
+          @logger.info('Operation successfully completed')
+          exit_code = 0 unless exit_code
+        else
+          @logger.error('Operation has completed unsuccessfully')
+          @logger.error('Encountered exceptions:')
+          exceptions.each do |exception|
+            @logger.error("- #{exception}")
+            exception.backtrace.each do |line|
+              @logger.error("  #{line}")
+            end
+          end
+          exit_code = 1 unless exit_code
+        end
+        exit_code
       end
     end
   end

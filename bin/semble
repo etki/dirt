@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
+library_root = File.expand_path('../../lib', __FILE__)
+$:.unshift(library_root) unless $:.include?(library_root)
+
 require 'cli/entry_point'
 
-semble = Semble::CLI::EntryPoint.new(Dir.pwd)
-semble.run(ARGV)
+exit Semble::CLI::EntryPoint.new.run(ARGV)

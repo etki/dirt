@@ -1,12 +1,12 @@
 require 'rspec'
-require 'model/schema'
+require 'model/blueprints'
 require 'model/version'
 require 'model/version_specification'
 
-RSpec.describe Semble::Model::Schema, '#get_slice' do
+RSpec.describe Semble::Model::Blueprints, '#get_slice' do
 
   def factory
-    Semble::Model::Schema.new
+    Semble::Model::Blueprints.new
   end
 
   def spec_factory(platform, version)

@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary  = 'Basic tool to maintain multi-version Docker projects'
   s.authors  = ['Etki']
-  s.files    = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md"]
+  s.files    = Dir['{lib}/**/*.rb', 'bin/*', 'LICENSE', '*.md']
   s.require_path = 'lib'
   s.executables = 'semble'
   s.homepage = 'https://github.com/etki/semble'
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'liquid', '~> 4.0'
   s.add_runtime_dependency 'gli', '~> 2.0'
   s.add_runtime_dependency 'semantic', '~> 1.5'
+  s.add_runtime_dependency 'dry-validation', '~> 0.10'
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'rake', '< 11.0' # last_comment RSpec issue
   s.add_development_dependency 'coveralls', '~> 0.8' # last_comment RSpec issue

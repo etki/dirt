@@ -3,7 +3,7 @@ require 'pathname'
 module Semble
   module FileSystem
     module Driver
-      class Memory < Interface
+      class Memory < Configuration
         def initialize
           @root = Node.new do |node|
             node.type = :directory

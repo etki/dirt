@@ -4,30 +4,36 @@ This is a work-in-process project that may never hit a release.
 
 # Semble
 
-This is a simple project to speed up multi-version Docker image 
+This is a simple utility to speed up multi-version Docker image 
 building.
+
+[![CircleCI branch](https://img.shields.io/circleci/project/github/etki/semble/master.svg?style=flat-square)](https://circleci.com/gh/etki/semble/tree/master)
+[![Coveralls](https://img.shields.io/coveralls/etki/semble.svg?style=flat-square)](https://coveralls.io/github/etki/semble)
+[![Rubygems](https://img.shields.io/gem/v/semble.svg?style=flat-square)](https://rubygems.org/gems/semble)
+[![Scrutinizer](https://img.shields.io/scrutinizer/g/etki/semble.svg?style=flat-square)](https://scrutinizer-ci.com/g/etki/semble/)
+[![Code Climate](https://img.shields.io/codeclimate/github/etki/semble.svg?style=flat-square)](https://codeclimate.com/github/etki/semble)
 
 ## Motivation
 
 Imagine you have to maintain an image for a service that has 
-several versions and several platforms (e.g. debian for backward 
-compatibility and alpine), and your dockerfile looks just like that:
+several versions and several platforms (e.g. Debian and Alpine), and 
+your dockerfiles look just like that:
 
 ```dockerfile
 RUN curl https://releases.company.com/product/$VERSION.deb > /tmp/package.deb
 
-RUN dpkg -i /tmp/package.deb # apk magic for alpine
+RUN dpkg -i /tmp/package.deb # or some apk magic for alpine
 ```
 
 While they differ only a little, you need some sophisticated management
 to update all maintained versions at once. If you store each version in
-a separated branch and need to add new `RUN` instruction, say, to fix a
+a separate branch and need to add new `RUN` instruction, say, to fix a
 security hole - you'll have a lot of manual work. Semble aims to solve 
 that problem and maintain Docker image sources as an easily rebuilt
 entity. Semble allows you to have a set of source files that are 
 filtered and optionally rendered for particular versions you may 
-specify, and by that you may rebuild several version sources from a 
-single source set using single command.
+specify, and by that you may rebuild several version sources from 
+source set using single command - with no redundant fuzz.
 
 ## Example
 
@@ -79,7 +85,7 @@ computes set of files to be used in that version, acting just like
 layer system inside Docker itself:
 
 ```
-semble debian:1.4.17
+semble build debian:1.4.17
 # Start from a layer for default platform, iterating over versions
 # platform: -, version: 0.0.0.0, source: src/_default/0
 + /etc/neural-subnet/motd.d/header
@@ -123,13 +129,12 @@ renders all `.liquid` files using provided context, so
 `additional.conf.liquid` would turn into `additional.conf`, if it 
 hasn't been wiped. Context for rendered consists of platform 
 (`debian`), used version (`1.4.17`) and user-provided values from 
-`semble.yml`. `semble.yml`, the last undiscussed aspect, has following 
-structure:
+`semble.yml` and `.semble/context.yml` along the road. `semble.yml`, 
+the last undiscussed aspect, has following structure:
 
 ```yml
-# used to render versions when `semble` is called without arguments
 targets:
-  # platform: { version: definition, version: definition }
+  # %platform%: { %version%: definition, %version%: definition }
   alpine:
     1.4.17: # will result in /build/alpine-1.4.17
     1.4.18:
@@ -154,5 +159,33 @@ The context for rendering templates is built in following way:
 - get first (lowest) version context
 - override it with later version and iterate until versions end
 - add `platform` and `version` entries, where `platform` is simple 
-string, and `version` is a hash with keys `full`, `major`, `minor`, `patch`, 
-`build` and `classifier`
+string, and `version` is a hash with keys `full`, `major`, `minor`, 
+`patch`, `build` and `classifier` (yes, i know your version 
+structure may be different - i'm sorry this is not supported at the 
+moment)
+
+## CLI commands
+
+Semble has very few commands (it doesn't need many):
+
+```
+# build all versions in semble.yml
+semble build
+# build specific version (not necessarily present in semble.yml)
+semble build <version>
+# list all known versions
+semble list versions
+# list all known versions for specific platform
+semble list versions <platform>
+# list all known platforms
+semble list platforms
+# build context for specific version and output it in YAML format
+semble context debian:1.4.17
+# dump semble version
+semble version
+```
+
+## Roadmap
+
+- Add `semble reflect` command that will reconfigure repository sources 
+on docker hub

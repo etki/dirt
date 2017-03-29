@@ -10,11 +10,10 @@ module Semble
       attr_accessor :short_version_strategy
       attr_accessor :default_platforms
 
-      def initialize(&block)
+      def initialize
         @schema = {}
         @short_version_strategy = SHORT_VERSION_STRATEGY_NONE
         @default_platforms = DEFAULT_PLATFORMS
-        block.call(self) if block
       end
 
       def self.default(working_directory = nil)
